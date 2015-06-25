@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <router>
-    <action url="/index" classpath="com.bserver.app.IndexController"></action>
+    <action url="/index" classpath="com.poplar.app.IndexController"></action>
 </router>
