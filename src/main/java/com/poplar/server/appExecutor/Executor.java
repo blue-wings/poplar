@@ -35,6 +35,9 @@ public class Executor {
                 request.dispose();
                 AppRequest appRequest = assembleAppRequest(request);
                 AppResponse appResponse = controllerProxy.invoke(appRequest);
+                if(appResponse == null){
+                    return getEmptyResponse(request);
+                }
                 return assembleResponse(request, appResponse);
             } catch (Throwable e) {
                 return get500Response(request);
@@ -137,6 +140,20 @@ public class Executor {
         response.setHeader(header);
         Content content = new Content();
         content.appendContent(html);
+        response.setContent(content);
+        return response;
+    }
+
+    private static Response getEmptyResponse(Request request) {
+        Response response = new Response();
+        response.setProtocol(request.getProtocol());
+        response.setStatus(Status.NOT_FOUND);
+        Header header = new Header();
+        header.setValue("Content-Type", "text/html");
+        header.setValue("Content-Length", "0");
+        response.setHeader(header);
+        Content content = new Content();
+        content.appendContent("");
         response.setContent(content);
         return response;
     }

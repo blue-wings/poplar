@@ -17,9 +17,18 @@ public class ControllerProxy {
     private Object controllerInstance;
 
     public AppResponse invoke(AppRequest appRequest) throws InvocationTargetException, IllegalAccessException {
-        Object[] params = new Object[1];
-        params[0]=appRequest;
-        return (AppResponse)controllerMethod.invoke(controllerInstance, params);
+        Class[] paramTypes = controllerMethod.getParameterTypes();
+        Object[] params = new Object[paramTypes.length];
+        for(int i=0; i<paramTypes.length; i++){
+            if(paramTypes[i].isAssignableFrom(AppRequest.class)){
+                params[i]=appRequest;
+            }
+        }
+        Class responseType = controllerMethod.getReturnType();
+        if(responseType.isAssignableFrom(AppResponse.class)){
+            return (AppResponse)controllerMethod.invoke(controllerInstance, params);
+        }
+        return null;
     }
 
     public String getUrl() {

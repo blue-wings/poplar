@@ -7,7 +7,7 @@ import java.util.Map;
  * Time: 5/18/15 3:00 PM
  */
 public class AppResponse {
-    private int status;
+    private int status=200;
     private Map<String, String> headers;
     private String content;
 

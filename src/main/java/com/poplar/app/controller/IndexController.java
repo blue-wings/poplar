@@ -1,4 +1,4 @@
-package com.poplar.app;
+package com.poplar.app.controller;
 
 import com.poplar.server.appExecutor.anno.Controller;
 import com.poplar.server.appExecutor.anno.RequestMapping;
@@ -14,7 +14,18 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/index")
-public class IndexController {
+public class IndexController  {
+
+    @RequestMapping("/json")
+    public AppResponse getJson(){
+        AppResponse response = new AppResponse();
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+        response.setHeaders(headers);
+        String json = "{\"id\":21,\"name\":\"fangrui\"}";
+        response.setContent(json);
+        return response;
+    }
 
     @RequestMapping("/hello")
     public AppResponse hello(AppRequest request) {
@@ -45,7 +56,6 @@ public class IndexController {
                     "</html> ";
             response.setContent(html);
         }
-        response.setStatus(200);
         return response;
     }
 }
