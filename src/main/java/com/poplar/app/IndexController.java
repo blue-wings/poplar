@@ -1,8 +1,8 @@
 package com.poplar.app;
 
-import com.poplar.appInterface.AbstractController;
-import com.poplar.context.app.AppRequest;
-import com.poplar.context.app.AppResponse;
+import com.poplar.server.appExecutor.appInterface.AbstractController;
+import com.poplar.server.context.app.AppRequest;
+import com.poplar.server.context.app.AppResponse;
 
 import java.util.HashMap;
 import java.util.Map;
