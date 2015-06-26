@@ -1,9 +1,8 @@
 package com.poplar.server;
 
 import com.poplar.server.appExecutor.AppClassScanner;
-import com.poplar.server.appExecutor.RouterScanner;
-import com.poplar.server.util.ConfigLoader;
 import com.poplar.server.nettyCore.NettyServer;
+import com.poplar.server.util.ConfigLoader;
 
 /**
  * User: FR
@@ -12,7 +11,6 @@ import com.poplar.server.nettyCore.NettyServer;
 public class Launcher {
     public static void run() throws Exception {
         AppClassScanner appClassScanner = new AppClassScanner();
-        RouterScanner routerScanner = new RouterScanner();
         ConfigLoader configLoader = new ConfigLoader();
         new NettyServer().serverStart();
     }

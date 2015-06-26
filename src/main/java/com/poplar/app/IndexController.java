@@ -1,6 +1,7 @@
 package com.poplar.app;
 
-import com.poplar.server.appExecutor.appInterface.AbstractController;
+import com.poplar.server.appExecutor.anno.Controller;
+import com.poplar.server.appExecutor.anno.RequestMapping;
 import com.poplar.server.context.app.AppRequest;
 import com.poplar.server.context.app.AppResponse;
 
@@ -11,9 +12,12 @@ import java.util.Map;
  * User: FR
  * Time: 5/18/15 5:13 PM
  */
-public class IndexController extends AbstractController {
-    @Override
-    public AppResponse onAppRequest(AppRequest request) {
+@Controller
+@RequestMapping("/index")
+public class IndexController {
+
+    @RequestMapping("/hello")
+    public AppResponse hello(AppRequest request) {
         AppResponse response = new AppResponse();
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "text/html;charset=UTF-8");

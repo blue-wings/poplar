@@ -1,6 +1,5 @@
 package com.poplar.server.appExecutor;
 
-import com.poplar.server.appExecutor.appInterface.AbstractController;
 import com.poplar.server.context.*;
 import com.poplar.server.context.app.AppRequest;
 import com.poplar.server.context.app.AppResponse;
@@ -30,42 +29,50 @@ public class Executor {
         if (extension != null && STATIC_EXTENSIONS.containsKey(extension)) {
             return getStaticResponse(request);
         }
-        Response response = new Response();
-        response.setProtocol(request.getProtocol());
-        String classpath = RouterScanner.getClasspath(url);
-        if (classpath != null) {
+        ControllerProxy controllerProxy = AppClassScanner.getMapping(url);
+        if (controllerProxy != null) {
             try {
                 request.dispose();
-                AbstractController controller = AppClassScanner.getAppController(classpath);
-                AppRequest appRequest = new AppRequest();
-                appRequest.setUrl(request.getUrl());
-                appRequest.setMethod(request.getMethod());
-                appRequest.setProtocol(request.getProtocol());
-                Map<String, String> headers = new HashMap<String, String>();
-                headers.putAll(request.getHeader().getValues());
-                appRequest.setHeaders(headers);
-                Map<String, String> params = new HashMap<String, String>();
-                params.putAll(request.getParameters());
-                appRequest.setParams(params);
-                AppResponse appResponse = controller.onAppRequest(appRequest);
-                response.setStatus(Status.getStatus(appResponse.getStatus()));
-                Header header = new Header();
-                header.setValues(appResponse.getHeaders());
-                response.setHeader(header);
-                Content content = new Content();
-                content.setContent(appResponse.getContent());
-                response.setContent(content);
-                if (response.getHeader().getValue(Constants.HttpHeader.TRANSFER_ENCODING) == null ||
-                        !response.getHeader().getValue(Constants.HttpHeader.TRANSFER_ENCODING).equals(Constants.HttpHeader.TRANSFER_ENCODING_CHUNKED)) {
-                    response.getHeader().setValue(Constants.HttpHeader.CONTENT_LENGTH, response.getContent().getContent().getBytes().length + "");
-                }
+                AppRequest appRequest = assembleAppRequest(request);
+                AppResponse appResponse = controllerProxy.invoke(appRequest);
+                return assembleResponse(request, appResponse);
             } catch (Throwable e) {
                 return get500Response(request);
             }
-            return response;
         } else {
             return get404Response(request);
         }
+    }
+
+    private static Response assembleResponse(Request request, AppResponse appResponse) {
+        Response response = new Response();
+        response.setProtocol(request.getProtocol());
+        response.setStatus(Status.getStatus(appResponse.getStatus()));
+        Header header = new Header();
+        header.setValues(appResponse.getHeaders());
+        response.setHeader(header);
+        Content content = new Content();
+        content.setContent(appResponse.getContent());
+        response.setContent(content);
+        if (response.getHeader().getValue(Constants.HttpHeader.TRANSFER_ENCODING) == null ||
+                !response.getHeader().getValue(Constants.HttpHeader.TRANSFER_ENCODING).equals(Constants.HttpHeader.TRANSFER_ENCODING_CHUNKED)) {
+            response.getHeader().setValue(Constants.HttpHeader.CONTENT_LENGTH, response.getContent().getContent().getBytes().length + "");
+        }
+        return response;
+    }
+
+    private static AppRequest assembleAppRequest(Request request) {
+        AppRequest appRequest = new AppRequest();
+        appRequest.setUrl(request.getUrl());
+        appRequest.setMethod(request.getMethod());
+        appRequest.setProtocol(request.getProtocol());
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.putAll(request.getHeader().getValues());
+        appRequest.setHeaders(headers);
+        Map<String, String> params = new HashMap<String, String>();
+        params.putAll(request.getParameters());
+        appRequest.setParams(params);
+        return appRequest;
     }
 
     private static Response getStaticResponse(Request request) {

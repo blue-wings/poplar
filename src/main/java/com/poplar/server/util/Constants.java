@@ -11,6 +11,9 @@ public class Constants {
     //Line feed character
     public static final byte LF = 10;
 
+    public class Service{
+    }
+
     public class Control{
         public static final String METHOD_GET="GET";
     }
