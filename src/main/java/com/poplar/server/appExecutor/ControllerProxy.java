@@ -62,4 +62,13 @@ public class ControllerProxy {
     public void setControllerInstance(Object controllerInstance) {
         this.controllerInstance = controllerInstance;
     }
+
+    @Override
+    public String toString() {
+        return "ControllerProxy{" +
+                "url='" + url + '\'' +
+                ", controllerClass=" + controllerClass.getName() +
+                ", controllerMethod=" + controllerMethod.getName() +
+                '}';
+    }
 }

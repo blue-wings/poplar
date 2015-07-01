@@ -6,6 +6,8 @@ import org.apache.commons.logging.LogFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -19,8 +21,8 @@ public class ConfigLoader {
 
     public ConfigLoader() throws IOException {
         this.properties = new Properties();
-        FileInputStream fileInputStream = new FileInputStream(new File(this.getClass().getResource("/").getPath()+"/poplarConfig.properties"));
-        properties.load(fileInputStream);
+        InputStream InputStream = this.getClass().getResourceAsStream("/poplarConfig.properties");
+        properties.load(InputStream);
         if(LOG.isDebugEnabled()){
             LOG.debug(properties.toString());
         }
