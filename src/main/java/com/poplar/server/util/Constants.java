@@ -16,6 +16,7 @@ public class Constants {
     }
 
     public class Service{
+        public static final String ENGINE_NETTY="netty";
     }
 
     public class HttpControl {

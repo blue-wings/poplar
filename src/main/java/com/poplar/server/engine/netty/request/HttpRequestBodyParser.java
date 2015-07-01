@@ -1,4 +1,4 @@
-package com.poplar.server.nettyEngin.request;
+package com.poplar.server.engine.netty.request;
 
 import com.poplar.server.context.Content;
 import com.poplar.server.context.Request;

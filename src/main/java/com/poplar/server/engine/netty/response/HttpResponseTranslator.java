@@ -1,4 +1,4 @@
-package com.poplar.server.nettyEngin.response;
+package com.poplar.server.engine.netty.response;
 
 import com.poplar.server.util.ConfigLoader;
 import com.poplar.server.context.Response;

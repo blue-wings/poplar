@@ -21,7 +21,7 @@ public class ConfigLoader {
 
     public ConfigLoader() throws IOException {
         this.properties = new Properties();
-        InputStream InputStream = this.getClass().getResourceAsStream("/poplarConfig.properties");
+        InputStream InputStream = this.getClass().getResourceAsStream("/poplar.properties");
         properties.load(InputStream);
         if(LOG.isDebugEnabled()){
             LOG.debug(properties.toString());
