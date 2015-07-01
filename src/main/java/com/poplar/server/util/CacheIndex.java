@@ -23,7 +23,7 @@ public class CacheIndex {
     private static ConcurrentHashMap<String, String> CACHE_INDEX = new ConcurrentHashMap<String, String>();
 
     public static boolean canClientUseLocalCache(Request request){
-        if(!request.getMethod().equals(Constants.Control.METHOD_GET)){
+        if(!request.getMethod().equals(Constants.HttpControl.METHOD_GET)){
             return false;
         }
         String url = request.getUrl();

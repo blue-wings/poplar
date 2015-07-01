@@ -28,12 +28,12 @@ public class IndexController  {
     }
 
     @RequestMapping("/hello")
-    public AppResponse hello(AppRequest request) {
+    public AppResponse hello(AppRequest request)  {
         AppResponse response = new AppResponse();
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "text/html;charset=UTF-8");
 //        headers.put("Transfer-Encoding", "chunked");
-        headers.put("Content-Encoding","gzip");
+//        headers.put("Content-Encoding","gzip");
         response.setHeaders(headers);
         if(request.getParamValue("name")!=null){
             String html = "<html> \r\n" +

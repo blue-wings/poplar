@@ -7,10 +7,14 @@ package com.poplar.server.context;
 public enum Status {
     //100
     CONTINUE(100, "CONTINUE"),
-    switching_protocols(101, "SWITCHING PROTOCOLS"),
+    SWITCHING_PROTOCOLS(101, "SWITCHING PROTOCOLS"),
+    PROCESSING(102, "PROCESSING"),
 
     //200
     OK(200,"OK"),
+    CREATED(201,"CREATED"),
+    ACCEPTED(202,"ACCEPTED"),
+
 
     //400
     NOT_FOUND(404,"URL NOT FOUND"),

@@ -1,15 +1,19 @@
-package com.poplar.server.nettyCore.request;
+package com.poplar.server.nettyEngin.request;
 
 import com.poplar.server.context.Request;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * User: FR
  * Time: 5/18/15 3:37 PM
  */
 public class HttpRequestHandler extends SimpleChannelInboundHandler<ByteBuf> {
+
+    private static Log LOG = LogFactory.getLog(HttpRequestHandler.class);
 
     private HttpRequestControlParser httpRequestControlParser = new HttpRequestControlParser();
     private HttpRequestHeaderParser httpRequestHeaderParser = new HttpRequestHeaderParser();
@@ -43,8 +47,16 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<ByteBuf> {
             return;
         }
         channelHandlerContext.fireChannelRead(request);
-        request = null;
+        request=null;
         processState=ProcessState.CONTROL;
     }
 
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        LOG.error("server error", cause);
+    }
+
+    public ProcessState getProcessState() {
+        return processState;
+    }
 }

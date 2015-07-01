@@ -1,0 +1,6 @@
+1.  more status,
+2.  static file support
+2.  web socket
+3.  cookie
+4.  session, can close with a switch
+5.  netty config

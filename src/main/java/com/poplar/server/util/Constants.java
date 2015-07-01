@@ -6,15 +6,19 @@ package com.poplar.server.util;
  */
 public class Constants {
 
-    //Carriage return
-    public static final byte CR = 13;
-    //Line feed character
-    public static final byte LF = 10;
+    public class SpecialCharacter{
+
+        //Carriage return
+        public static final byte CR = 13;
+        //Line feed character
+        public static final byte LF = 10;
+        public static final String SPACE =" ";
+    }
 
     public class Service{
     }
 
-    public class Control{
+    public class HttpControl {
         public static final String METHOD_GET="GET";
     }
 

@@ -1,10 +1,12 @@
-package com.poplar.server.nettyCore.response;
+package com.poplar.server.nettyEngin.response;
 
 import com.poplar.server.appExecutor.Executor;
 import com.poplar.server.context.Request;
 import com.poplar.server.context.Response;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * User: FR
@@ -12,11 +14,17 @@ import io.netty.channel.SimpleChannelInboundHandler;
  */
 public class HttpResponseHandler extends SimpleChannelInboundHandler<Request> {
 
+    private static Log LOG = LogFactory.getLog(HttpResponseHandler.class);
 
     @Override
     protected void messageReceived(ChannelHandlerContext channelHandlerContext, Request request) throws Exception {
         Response response = Executor.execute(request);
         HttpResponseTranslator.translate(response, channelHandlerContext);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        LOG.error("server error", cause);
     }
 
 }

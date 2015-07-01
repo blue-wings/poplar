@@ -1,4 +1,4 @@
-package com.poplar.server.nettyCore.response;
+package com.poplar.server.nettyEngin.response;
 
 import com.poplar.server.util.ConfigLoader;
 import com.poplar.server.context.Response;
@@ -6,6 +6,8 @@ import com.poplar.server.util.CompressUtil;
 import com.poplar.server.util.Constants;
 import com.poplar.server.util.IOUtils;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
@@ -15,6 +17,8 @@ import java.util.Map;
  * Time: 5/25/15 1:31 PM
  */
 public class HttpResponseTranslator {
+
+    private static Log LOG = LogFactory.getLog(HttpResponseTranslator.class);
 
     public static void translate(Response response, ChannelHandlerContext channelHandlerContext) throws UnsupportedEncodingException {
         if (response.getHeader().getValue(Constants.HttpHeader.TRANSFER_ENCODING) != null &&
@@ -36,7 +40,9 @@ public class HttpResponseTranslator {
                 contentBytes = response.getContent().getContent().getBytes("UTF-8");
             }
             writeHead2Client(response, channelHandlerContext);
-            System.out.println(response.getContent().getContent());
+            if(LOG.isDebugEnabled()){
+                LOG.debug(response.getContent().getContent());
+            }
             IOUtils.writeAndFlush(contentBytes, channelHandlerContext);
         }
     }
@@ -51,7 +57,7 @@ public class HttpResponseTranslator {
                 contentBytes = response.getContent().getContent().getBytes("UTF-8");
             }
             writeHead2Client(response, channelHandlerContext);
-            int chunkSize = ConfigLoader.getValueInt("transfer-encoding-size");
+            int chunkSize = ConfigLoader.getIntValue("transfer-encoding-size");
             int index = 0;
             while ((contentBytes.length - index) > 0) {
                 if ((contentBytes.length - index) > chunkSize) {
@@ -77,7 +83,9 @@ public class HttpResponseTranslator {
             sb.append(entry.getKey() + ":" + entry.getValue() + "\r\n");
         }
         sb.append("\r\n");
-        System.out.println(sb.toString());
+        if(LOG.isDebugEnabled()){
+            LOG.debug(sb.toString());
+        }
         IOUtils.writeAndFlush(sb.toString(), channelHandlerContext);
     }
 

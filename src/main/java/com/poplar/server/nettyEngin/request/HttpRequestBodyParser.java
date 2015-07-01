@@ -1,10 +1,11 @@
-package com.poplar.server.nettyCore.request;
+package com.poplar.server.nettyEngin.request;
 
 import com.poplar.server.context.Content;
 import com.poplar.server.context.Request;
 import io.netty.buffer.ByteBuf;
-import com.poplar.server.util.CacheIndex;
 import com.poplar.server.util.Constants;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * User: FR
@@ -12,12 +13,11 @@ import com.poplar.server.util.Constants;
  */
 public class HttpRequestBodyParser {
 
+    private static Log LOG = LogFactory.getLog(HttpRequestBodyParser.class);
+
     private int processLength=0;
 
     public HttpRequestHandler.ProcessState parse(Request request, ByteBuf byteBuf){
-        if(CacheIndex.canClientUseLocalCache(request)){
-            return HttpRequestHandler.ProcessState.COMPLETE;
-        }
         Content bodyContent = request.getContent();
         if(bodyContent==null){
             bodyContent = new Content();
@@ -32,7 +32,9 @@ public class HttpRequestBodyParser {
                 processLength++;
             }
             bodyContent.appendContent(sb.toString());
-            System.out.println("http body "+sb.toString());
+            if(LOG.isDebugEnabled()){
+                LOG.debug("http body "+sb.toString());
+            }
             if(processLength==Integer.parseInt(length)){
                 return HttpRequestHandler.ProcessState.COMPLETE;
             }
