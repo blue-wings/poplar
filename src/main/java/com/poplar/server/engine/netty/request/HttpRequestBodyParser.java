@@ -2,10 +2,12 @@ package com.poplar.server.engine.netty.request;
 
 import com.poplar.server.context.Content;
 import com.poplar.server.context.Request;
-import io.netty.buffer.ByteBuf;
 import com.poplar.server.util.Constants;
+import io.netty.buffer.ByteBuf;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.nio.charset.Charset;
 
 /**
  * User: FR
@@ -16,6 +18,7 @@ public class HttpRequestBodyParser {
     private static Log LOG = LogFactory.getLog(HttpRequestBodyParser.class);
 
     private int processLength=0;
+    private byte[] contentBytes;
 
     public HttpRequestHandler.ProcessState parse(Request request, ByteBuf byteBuf){
         Content bodyContent = request.getContent();
@@ -23,22 +26,27 @@ public class HttpRequestBodyParser {
             bodyContent = new Content();
             request.setContent(bodyContent);
         }
-        String length = request.getHeader().getValue(Constants.HttpHeader.CONTENT_LENGTH);
+        Integer length = request.getHeader().getIntValue(Constants.HttpHeader.CONTENT_LENGTH);
         if(length!=null){
-            StringBuilder sb = new StringBuilder();
-            int size = Math.min(byteBuf.capacity(), Integer.parseInt(length)-processLength);
+            if(contentBytes==null){
+                contentBytes = new byte[length];
+            }
+            int size = Math.min(byteBuf.capacity(), length-processLength);
             for(int i=0; i<size;i++){
-                sb.append(((char) byteBuf.readByte()));
+                contentBytes[processLength]=byteBuf.readByte();
                 processLength++;
             }
-            bodyContent.appendContent(sb.toString());
-            if(LOG.isDebugEnabled()){
-                LOG.debug("http body "+sb.toString());
-            }
-            if(processLength==Integer.parseInt(length)){
+            if(processLength==length){
+                String charsetName = request.getHeader().getStrValue(Constants.HttpHeader.CHARSET)==null? Constants.SpecialCharacter.UTF_8 :request.getHeader().getStrValue(Constants.HttpHeader.CHARSET);
+                String content = new String(contentBytes, Charset.forName(charsetName));
+                bodyContent.setContent(content);
+                contentBytes=null;
+                processLength=0;
                 return HttpRequestHandler.ProcessState.COMPLETE;
             }
         }else {
+            contentBytes=null;
+            processLength=0;
             return HttpRequestHandler.ProcessState.COMPLETE;
         }
         return HttpRequestHandler.ProcessState.BODY;

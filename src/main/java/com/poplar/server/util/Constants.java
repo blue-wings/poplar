@@ -13,6 +13,7 @@ public class Constants {
         //Line feed character
         public static final byte LF = 10;
         public static final String SPACE =" ";
+        public static final String UTF_8 = "UTF-8";
     }
 
     public class Service{
@@ -35,10 +36,13 @@ public class Constants {
         public static final String CONTENT_LENGTH="Content-Length";
         public static final String CONTENT_TYPE="Content-Type";
         public static final String CONTENT_TYPE_MULTIPART="multipart/form-data";
+        public static final String CONTENT_TYPE_FORM="application/x-www-form-urlencoded";
+        public static final String CONTENT_TYPE_JSON="application/json";
         public static final String TRANSFER_ENCODING="Transfer-Encoding";
         public static final String TRANSFER_ENCODING_CHUNKED="chunked";
         public static final String CONTENT_TRANSFER_ENCODING="Content-Transfer-Encoding";
         public static final String CONTENT_TRANSFER_ENCODING_BINARY="binary";
+        public static final String CHARSET="charset";
 
 
         public static final String ETag="ETag";

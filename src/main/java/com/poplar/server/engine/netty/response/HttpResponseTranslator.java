@@ -21,8 +21,8 @@ public class HttpResponseTranslator {
     private static Log LOG = LogFactory.getLog(HttpResponseTranslator.class);
 
     public static void translate(Response response, ChannelHandlerContext channelHandlerContext) throws UnsupportedEncodingException {
-        if (response.getHeader().getValue(Constants.HttpHeader.TRANSFER_ENCODING) != null &&
-                response.getHeader().getValue(Constants.HttpHeader.TRANSFER_ENCODING).equals(Constants.HttpHeader.TRANSFER_ENCODING_CHUNKED)) {
+        if (response.getHeader().getStrValue(Constants.HttpHeader.TRANSFER_ENCODING) != null &&
+                response.getHeader().getStrValue(Constants.HttpHeader.TRANSFER_ENCODING).equals(Constants.HttpHeader.TRANSFER_ENCODING_CHUNKED)) {
             TrunkedBodyTranslator.translate(response, channelHandlerContext);
         } else {
             FixedLengthBodyTranslator.translate(response, channelHandlerContext);
@@ -32,7 +32,7 @@ public class HttpResponseTranslator {
     private static class FixedLengthBodyTranslator {
         public static void translate(Response response, ChannelHandlerContext channelHandlerContext) throws UnsupportedEncodingException {
             byte[] contentBytes = null;
-            if (response.getHeader().getValue(Constants.HttpHeader.CONTENT_ENCODING) != null) {
+            if (response.getHeader().getStrValue(Constants.HttpHeader.CONTENT_ENCODING) != null) {
                 String content = response.getContent().getContent();
                 contentBytes = CompressUtil.compressByGzip(content);
                 response.getHeader().setValue(Constants.HttpHeader.CONTENT_LENGTH, contentBytes.length + "");
@@ -50,7 +50,7 @@ public class HttpResponseTranslator {
     private static class TrunkedBodyTranslator {
         public static void translate(Response response, ChannelHandlerContext channelHandlerContext) throws UnsupportedEncodingException {
             byte[] contentBytes = null;
-            if (response.getHeader().getValue(Constants.HttpHeader.CONTENT_ENCODING) != null) {
+            if (response.getHeader().getStrValue(Constants.HttpHeader.CONTENT_ENCODING) != null) {
                 //TODO to more efficient, can write to response while compressing. Now is more structured
                 contentBytes = CompressUtil.compressByGzip(response.getContent().getContent());
             } else {

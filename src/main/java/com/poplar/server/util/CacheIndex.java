@@ -30,8 +30,8 @@ public class CacheIndex {
         if(!CacheIndex.isCachable(url)){
             return false;
         }
-        boolean isETagUseful = CacheIndex.isETagUseful(url, request.getHeader().getValue(Constants.HttpHeader.IF_NONE_MATCH));
-        boolean isModifySince = CacheIndex.isModifySince(url, request.getHeader().getValue(Constants.HttpHeader.IF_MODIFIED_SINCE));
+        boolean isETagUseful = CacheIndex.isETagUseful(url, request.getHeader().getStrValue(Constants.HttpHeader.IF_NONE_MATCH));
+        boolean isModifySince = CacheIndex.isModifySince(url, request.getHeader().getStrValue(Constants.HttpHeader.IF_MODIFIED_SINCE));
         return isETagUseful&&isModifySince;
     }
 

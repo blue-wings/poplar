@@ -3,6 +3,7 @@ package com.poplar.server.engine.netty.request;
 import com.poplar.server.context.Header;
 import com.poplar.server.context.Request;
 import com.poplar.server.util.BufferLineReader;
+import com.poplar.server.util.Constants;
 import io.netty.buffer.ByteBuf;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +41,18 @@ public class HttpRequestHeaderParser {
                 return HttpRequestHandler.ProcessState.BODY;
             }
             String[] msgs = line.toString().split(": ");
-            headers.put(msgs[0].trim(), msgs[1].trim());
+            String key = msgs[0];
+            String value= msgs[1];
+            if(key.equals(Constants.HttpHeader.CONTENT_TYPE)){
+                String[] values = value.split(";");
+                headers.put(key.trim(), values[0].trim());
+                if(values.length==2){
+                    String[] charsets = values[1].split("=");
+                    key=charsets[0];
+                    value=charsets[1];
+                }
+            }
+            headers.put(key.trim(), value.trim());
             lineBuilder = new StringBuilder();
             if(LOG.isDebugEnabled()){
                 LOG.debug("http header "+msgs[0]+" - "+msgs[1]);

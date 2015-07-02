@@ -1,5 +1,6 @@
 package com.poplar.server.context;
 
+import com.poplar.server.context.parameterConverter.*;
 import com.poplar.server.util.Constants;
 
 import java.io.UnsupportedEncodingException;
@@ -85,32 +86,4 @@ public class Request {
         this.parameters = parameters;
     }
 
-
-    public void dispose() throws UnsupportedEncodingException {
-        String  contentType = this.getHeader().getValue(Constants.HttpHeader.CONTENT_TYPE);
-        Map<String,  String> parameters = this.getParameters();
-        String url = this.getUrl();
-        if(url.indexOf("?")!=-1){
-            String paramSegment = url.substring(url.indexOf("?")+1);
-            String[] kvSegments = paramSegment.split("&");
-            for(String kvSegment : kvSegments){
-                String[] kv = kvSegment.split("=");
-                String value = URLDecoder.decode(kv[1], "UTF-8");
-                parameters.put(kv[0],value);
-            }
-        }
-        if(contentType!=null && contentType.contains(Constants.HttpHeader.CONTENT_TYPE_MULTIPART)){
-
-        }else{
-            String content = this.getContent().getContent();
-            if(content!=null && content.length()!=0){
-                String[] paramPairs = content.split("&");
-                for(String paramPair : paramPairs){
-                    String[] params = paramPair.split("=");
-                    parameters.put(params[0],params[1]);
-                }
-            }
-        }
-        this.setParameters(parameters);
-    }
 }

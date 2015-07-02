@@ -23,7 +23,21 @@ public class Header {
         values.put(headerKey, value);
     }
 
-    public String getValue(String headerKey){
+    public String getStrValue(String headerKey){
         return values.get(headerKey);
+    }
+
+    public Integer getIntValue(String headKey){
+        if(values.get(headKey)==null){
+            return null;
+        }
+        return Integer.parseInt(values.get(headKey));
+    }
+
+    public Long getLongValue(String headKey){
+        if(values.get(headKey)==null){
+            return null;
+        }
+        return Long.parseLong(values.get(headKey));
     }
 }

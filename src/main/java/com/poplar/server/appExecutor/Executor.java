@@ -3,6 +3,7 @@ package com.poplar.server.appExecutor;
 import com.poplar.server.context.*;
 import com.poplar.server.context.app.AppRequest;
 import com.poplar.server.context.app.AppResponse;
+import com.poplar.server.context.parameterConverter.ParameterDisposer;
 import com.poplar.server.util.Constants;
 
 import java.util.HashMap;
@@ -32,7 +33,7 @@ public class Executor {
         ControllerProxy controllerProxy = AppClassScanner.getMapping(url);
         if (controllerProxy != null) {
             try {
-                request.dispose();
+                ParameterDisposer.dispose(request);
                 AppRequest appRequest = assembleAppRequest(request);
                 AppResponse appResponse = controllerProxy.invoke(appRequest);
                 if(appResponse == null){
@@ -57,8 +58,8 @@ public class Executor {
         Content content = new Content();
         content.setContent(appResponse.getContent());
         response.setContent(content);
-        if (response.getHeader().getValue(Constants.HttpHeader.TRANSFER_ENCODING) == null ||
-                !response.getHeader().getValue(Constants.HttpHeader.TRANSFER_ENCODING).equals(Constants.HttpHeader.TRANSFER_ENCODING_CHUNKED)) {
+        if (response.getHeader().getStrValue(Constants.HttpHeader.TRANSFER_ENCODING) == null ||
+                !response.getHeader().getStrValue(Constants.HttpHeader.TRANSFER_ENCODING).equals(Constants.HttpHeader.TRANSFER_ENCODING_CHUNKED)) {
             response.getHeader().setValue(Constants.HttpHeader.CONTENT_LENGTH, response.getContent().getContent().getBytes().length + "");
         }
         return response;
