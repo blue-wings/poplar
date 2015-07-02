@@ -3,7 +3,7 @@ package com.poplar.server.appExecutor;
 import com.poplar.server.context.*;
 import com.poplar.server.context.app.AppRequest;
 import com.poplar.server.context.app.AppResponse;
-import com.poplar.server.context.parameterConverter.ParameterDisposer;
+import com.poplar.server.context.parameterDisposer.ParameterDisposer;
 import com.poplar.server.util.Constants;
 
 import java.util.HashMap;
