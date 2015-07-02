@@ -1,5 +1,6 @@
 package com.poplar.server.engine.netty;
 
+import com.poplar.server.engine.Engine;
 import com.poplar.server.engine.netty.monotor.TimeMonitor;
 import com.poplar.server.engine.netty.request.HttpRequestHandler;
 import com.poplar.server.engine.netty.response.HttpResponseHandler;
@@ -20,17 +21,20 @@ import org.apache.commons.logging.LogFactory;
  * User: FR
  * Time: 5/18/15 3:08 PM
  */
-public class NettyEngine {
+public class NettyEngine implements Engine{
 
     private static Log LOG = LogFactory.getLog(NettyEngine.class);
+    private EventLoopGroup bossGroup;
+    private EventLoopGroup workerGroup;
 
-    public static void serverStart(){
+    @Override
+    public void start(){
         final Long readTimeout = ConfigLoader.getStrValue("net.read.timeout")==null?null:ConfigLoader.getLongValue("net.read.timeout");
         final Long writeTimeout = ConfigLoader.getStrValue("net.write.timeout")==null?null:ConfigLoader.getLongValue("net.write.timeout");
         String selectorThreadNum = ConfigLoader.getStrValue("selector.thread.num");
         String workerThreadNum = ConfigLoader.getStrValue("worker.thread.num");
-        EventLoopGroup bossGroup = selectorThreadNum==null?new NioEventLoopGroup():new NioEventLoopGroup(Integer.parseInt(selectorThreadNum));
-        EventLoopGroup workerGroup = workerThreadNum==null?new NioEventLoopGroup():new NioEventLoopGroup(Integer.parseInt(workerThreadNum));
+        bossGroup = selectorThreadNum==null?new NioEventLoopGroup():new NioEventLoopGroup(Integer.parseInt(selectorThreadNum));
+        workerGroup = workerThreadNum==null?new NioEventLoopGroup():new NioEventLoopGroup(Integer.parseInt(workerThreadNum));
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
@@ -51,8 +55,14 @@ public class NettyEngine {
         } catch (InterruptedException e) {
             LOG.error("netty engine is wrong");
         }finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
+            stop();
         }
+    }
+
+    @Override
+    public void stop() {
+        LOG.info("netty engine is stopping");
+        bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
     }
 }

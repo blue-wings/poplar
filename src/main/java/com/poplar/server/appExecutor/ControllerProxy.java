@@ -28,6 +28,7 @@ public class ControllerProxy {
         if(responseType.isAssignableFrom(AppResponse.class)){
             return (AppResponse)controllerMethod.invoke(controllerInstance, params);
         }
+        controllerMethod.invoke(controllerInstance, params);
         return null;
     }
 

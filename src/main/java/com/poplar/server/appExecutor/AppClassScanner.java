@@ -2,17 +2,20 @@ package com.poplar.server.appExecutor;
 
 import com.poplar.server.appExecutor.anno.Controller;
 import com.poplar.server.appExecutor.anno.RequestMapping;
+import com.poplar.server.exception.AppClassScanException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -25,12 +28,9 @@ public class AppClassScanner {
     private static Log LOG = LogFactory.getLog(AppClassScanner.class);
 
     private static Map<String, ControllerProxy> APP_MAPPING_MAP = new HashMap<String, ControllerProxy>();
+    private static AppClassScanner CLASS_SCANNER;
 
-    public AppClassScanner() throws IllegalAccessException, InstantiationException, ClassNotFoundException, IOException {
-        this.scan();
-    }
-
-    public void scan() throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
+    private AppClassScanner() throws IllegalAccessException, InstantiationException, ClassNotFoundException, IOException {
         URL url = this.getClass().getResource("/");
         if(url==null){
             jarScan();
@@ -39,10 +39,29 @@ public class AppClassScanner {
         }
     }
 
+    public static void scan() throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
+        if(CLASS_SCANNER==null){
+            synchronized (AppClassScanner.class){
+                if(CLASS_SCANNER==null){
+                    CLASS_SCANNER = new AppClassScanner();
+                }
+            }
+        }
+    }
+
     private void jarScan() throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-        File file = new File(".").listFiles()[0];
-        JarFile jarFile = new JarFile(file.getPath());
-        Enumeration<JarEntry> entryEnumeration = jarFile.entries();
+        File jarFile =null;
+        for(File file :  new File(".").listFiles()){
+            if(file.getAbsolutePath().endsWith(".jar")){
+                jarFile = file;
+                break;
+            }
+        }
+        if(jarFile==null){
+            throw new AppClassScanException("no jar file exists");
+        }
+        LOG.debug(jarFile.getAbsolutePath());
+        Enumeration<JarEntry> entryEnumeration = new JarFile(jarFile.getAbsolutePath()).entries();
         while (entryEnumeration.hasMoreElements()){
             JarEntry jarEntry = entryEnumeration.nextElement();
             if(jarEntry.getName().matches("com/poplar/app/(.*)\\.class")){

@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: com.poplar.Server
+Main-Class: com.poplar.server.Launcher
 

@@ -4,3 +4,5 @@
 3.  cookie
 4.  session, can close with a switch
 5.  netty config
+6.  form chinese, utf8
+7.  how to call stop method, net call is stupid

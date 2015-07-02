@@ -3,11 +3,8 @@ package com.poplar.server.util;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -17,26 +14,37 @@ import java.util.Properties;
 public class ConfigLoader {
     private static Log LOG = LogFactory.getLog(ConfigLoader.class);
 
-    private static Properties properties;
+    private static Properties PROPERTIES;
+    private static ConfigLoader INSTANCE;
 
-    public ConfigLoader() throws IOException {
-        this.properties = new Properties();
+    private ConfigLoader() throws IOException {
+        this.PROPERTIES = new Properties();
         InputStream InputStream = this.getClass().getResourceAsStream("/poplar.properties");
-        properties.load(InputStream);
+        PROPERTIES.load(InputStream);
         if(LOG.isDebugEnabled()){
-            LOG.debug(properties.toString());
+            LOG.debug(PROPERTIES.toString());
+        }
+    }
+
+    public static void loadProperties() throws IOException {
+        if(INSTANCE==null){
+            synchronized(ConfigLoader.class){
+                if(INSTANCE==null){
+                    INSTANCE = new ConfigLoader();
+                }
+            }
         }
     }
 
     public static String getStrValue(String key){
-        return properties.getProperty(key);
+        return PROPERTIES.getProperty(key);
     }
 
     public static int getIntValue(String key){
-        return Integer.parseInt(properties.getProperty(key));
+        return Integer.parseInt(PROPERTIES.getProperty(key));
     }
 
     public static long getLongValue(String key){
-        return Long.parseLong(properties.getProperty(key));
+        return Long.parseLong(PROPERTIES.getProperty(key));
     }
 }
