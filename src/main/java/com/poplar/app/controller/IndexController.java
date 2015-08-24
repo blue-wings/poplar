@@ -1,10 +1,12 @@
 package com.poplar.app.controller;
 
-import com.poplar.server.Launcher;
+import com.poplar.app.service.IndexService;
+import com.poplar.app.service.IndexServiceImpl;
+import com.poplar.server.appExecutor.anno.Autowired;
 import com.poplar.server.appExecutor.anno.Controller;
 import com.poplar.server.appExecutor.anno.RequestMapping;
-import com.poplar.server.context.app.AppRequest;
-import com.poplar.server.context.app.AppResponse;
+import com.poplar.server.httpObj.app.AppRequest;
+import com.poplar.server.httpObj.app.AppResponse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,13 +19,16 @@ import java.util.Map;
 @RequestMapping("/index")
 public class IndexController  {
 
+    @Autowired
+    private IndexService indexService;
+
     @RequestMapping("/json")
     public AppResponse getJson(){
         AppResponse response = new AppResponse();
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json;charset=UTF-8");
         response.setHeaders(headers);
-        String json = "{\"id\":21,\"name\":\"fangrui\"}";
+        String json = indexService.getNameJson();
         response.setContent(json);
         return response;
     }

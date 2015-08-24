@@ -1,6 +1,6 @@
 package com.poplar.server.util;
 
-import com.poplar.server.context.Request;
+import com.poplar.server.httpObj.Request;
 
 import java.util.ArrayList;
 import java.util.List;
