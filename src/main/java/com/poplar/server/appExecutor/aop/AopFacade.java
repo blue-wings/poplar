@@ -19,6 +19,7 @@ public class AopFacade {
 
     private static Map<Method, String> ADVISOR_POINTS = new HashMap<Method, String>();
     private static Map<String, Object> ADVISORS = new HashMap<String, Object>();
+    private static Map<Class, AopChain> CLASS_AOP_CHAIN_MAP = new HashMap<Class, AopChain>();
 
     public static void addAdvisor(Class advisorClass) throws IllegalAccessException, InstantiationException {
         Method[] methods = advisorClass.getMethods();
@@ -74,8 +75,8 @@ public class AopFacade {
         }
 
         for(Map.Entry<String, Method> entry : methodPotions.entrySet()){
-            Object target = nameObjectMap.get(entry.getValue().getDeclaringClass().getInterfaces()[0]);
             for(Map.Entry<Method, String> advisorEntry : ADVISOR_POINTS.entrySet()){
+                Object target = nameObjectMap.get(entry.getValue().getDeclaringClass().getInterfaces()[0]);
                 Method method = advisorEntry.getKey();
                 String position = getAnnoValue(method);
                 if(position==null){
@@ -85,26 +86,29 @@ public class AopFacade {
                 Matcher m = pattern.matcher(entry.getKey());
                 if(m.find()){
                     Object advisor = ADVISORS.get(advisorEntry.getValue());
-                    Object proxy = wrap(target, entry.getValue(), advisor, method);
-                    nameObjectMap.put(entry.getValue().getDeclaringClass().getInterfaces()[0], proxy);
+                    if(!CLASS_AOP_CHAIN_MAP.containsKey(target.getClass())){
+                        CLASS_AOP_CHAIN_MAP.put(target.getClass(), new AopChain(target));
+                    }
+                    CLASS_AOP_CHAIN_MAP.get(target.getClass()).addAdvisorProxy(advisor, method, entry.getValue());
                 }
             }
+        }
+        for(Map.Entry<Class, AopChain> entry : CLASS_AOP_CHAIN_MAP.entrySet()){
+            Object proxy = wrap(entry.getValue());
+            nameObjectMap.put(entry.getKey().getInterfaces()[0], proxy);
         }
 
     }
 
-    private static Object wrap(Object target, Method targetMethod, Object advisor, Method advisorMethod){
+    private static Object wrap(AopChain aopChain){
+        Object target = aopChain.getTargetObject();
         return Proxy.newProxyInstance(target.getClass().getClassLoader(), target.getClass().getInterfaces(),
                 new InvocationHandler() {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                if(advisorMethod.getAnnotation(Before.class)!=null || advisorMethod.getAnnotation(Around.class)!=null){
-                    advisorMethod.invoke(advisor);
-                }
-                Object result = targetMethod.invoke(target, args);
-                if(advisorMethod.getAnnotation(After.class)!=null || advisorMethod.getAnnotation(Around.class)!=null){
-                    advisorMethod.invoke(advisor);
-                }
+                aopChain.executeBeforeAdvisorChain(method);
+                Object result = method.invoke(target, args);
+                aopChain.executeAfterAdvisorChain(method);
                 return result;
             }
         });

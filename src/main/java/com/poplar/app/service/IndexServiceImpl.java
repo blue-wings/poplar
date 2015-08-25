@@ -1,6 +1,5 @@
 package com.poplar.app.service;
 
-import com.poplar.server.appExecutor.anno.Autowired;
 import com.poplar.server.appExecutor.anno.Service;
 
 /**
